@@ -14,6 +14,10 @@ class MenuRepository(ABC):
         pass
 
     @abstractmethod
+    def find_by_name(self, name: str) -> Menu | None:
+        pass
+
+    @abstractmethod
     def find_all(self) -> list[Menu]:
         pass
 
