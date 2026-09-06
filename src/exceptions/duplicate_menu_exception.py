@@ -1,6 +1,6 @@
 from fastapi import status
 
-from exceptions import AppException
+from src.exceptions import AppException
 
 
 class DuplicateMenuException(AppException):

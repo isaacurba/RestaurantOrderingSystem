@@ -1,6 +1,6 @@
 from src.exceptions.menu_not_found_exception import MenuNotFoundException
 from src.exceptions.duplicate_menu_exception import DuplicateMenuException
-from schemas.menu import MenuUpdate, MenuResponse, MenuCreate
+from src.schemas.menu import MenuUpdate, MenuResponse, MenuCreate
 from src.exceptions.menu_item_not_found_exception import MenuItemNotFoundException
 from src.exceptions.duplicate_menu_item_exception import DuplicateMenuItemException
 from src.exceptions.forbidden_exception import ForbiddenException
@@ -50,7 +50,7 @@ class AdminServiceImpl(AdminService):
             raise MenuNotFoundException(f"Menu with id {menu_id} not found")
         self.menu_repository.delete(existing_menu.id)
 
-    def add_menu_item(self,user: User,item: MenuItemCreate) -> MenuItemResponse:
+    def add_menu_item(self,user: User, item: MenuItemCreate) -> MenuItemResponse:
 
         if user.role != UserRole.ADMIN or not user.is_active:
             raise ForbiddenException("Only active admins can create menu item")

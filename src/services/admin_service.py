@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from schemas.menu import MenuCreate, MenuResponse, MenuUpdate
+from src.schemas.menu import MenuCreate, MenuResponse, MenuUpdate
 from src.db_models.user import User
 from src.schemas.menu_item import MenuItemResponse, MenuItemCreate, MenuItemUpdate
 
