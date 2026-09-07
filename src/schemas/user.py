@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr, ConfigDict
 from src.models.user_role import UserRole
 
 
@@ -8,7 +8,6 @@ class UserCreate(BaseModel):
     password: str = Field(min_length=1, max_length=200)
     address: str = Field(min_length=1, max_length=200)
     is_active: bool = False
-
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -21,5 +20,10 @@ class UserResponse(BaseModel):
     role: UserRole
     is_active: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str
+
+    model_config = ConfigDict(from_attributes=True)
