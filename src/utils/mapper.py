@@ -14,6 +14,7 @@ class Mapper:
             full_name=user_data.full_name,
             email=user_data.email,
             password=user_data.password,
+            address=user_data.address,
             is_active=user_data.is_active,
         )
         return user
