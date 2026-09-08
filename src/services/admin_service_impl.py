@@ -15,8 +15,8 @@ from src.utils.mapper import Mapper
 class AdminServiceImpl(AdminService):
 
     def __init__(self, menu_repository, menu_item_repository):
-        self.menu_item_repository = menu_item_repository
         self.menu_repository = menu_repository
+        self.menu_item_repository = menu_item_repository
 
     def create_menu(self, user: User, menu: MenuCreate) -> MenuResponse:
         if user.role != UserRole.ADMIN or not user.is_active:
