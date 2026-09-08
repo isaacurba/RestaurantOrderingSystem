@@ -1,5 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
+from src.schemas.user import TokenResponse
 from src.controller.auth_controller import AuthController
 from src.schemas.user import UserCreate, UserLogin, UserResponse
 from src.repositories.user_repository_impl import UserRepositoryImpl
@@ -15,13 +16,12 @@ def get_controller():
     service = AuthServiceImpl(repository)
     return AuthController(service)
 
-@router.post("/register", response_model=UserResponse)
+@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register(user_data: UserCreate):
     controller = get_controller()
     return controller.register(user_data)
 
-
-@router.post("/login", response_model=UserResponse)
+@router.post("/login", response_model=TokenResponse, status_code=status.HTTP_200_OK)
 def login(user_data: UserLogin):
     controller = get_controller()
     return controller.login(user_data)

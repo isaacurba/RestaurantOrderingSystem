@@ -1,4 +1,4 @@
-from exceptions import AppException
+from src.exceptions import AppException
 from fastapi import status
 
 class ForbiddenException(AppException):
