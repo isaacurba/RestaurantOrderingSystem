@@ -18,6 +18,10 @@ class MenuRepositoryImpl(MenuRepository):
     def find_by_id(self, menu_id: int) -> Menu | None:
         return self.session.get(Menu, menu_id)
 
+    def find_by_name(self, name: str) -> Menu | None:
+        statement = select(Menu).where(Menu.name == name)
+        return self.session.scalar(statement)
+
     def find_all(self) -> list[Menu]:
         statement = select(Menu)
         return list(self.session.scalars(statement).all())

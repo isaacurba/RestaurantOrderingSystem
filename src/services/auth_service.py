@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from src.schemas.user import TokenResponse
 from src.schemas.user import UserCreate, UserLogin, UserResponse
 
 
@@ -10,6 +11,6 @@ class AuthService(ABC):
         pass
 
     @abstractmethod
-    def login(self, user_data: UserLogin) -> UserResponse:
+    def login(self, user_data: UserLogin) -> TokenResponse:
         pass
 

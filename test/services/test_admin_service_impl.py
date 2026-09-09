@@ -1,7 +1,10 @@
 import pytest
 
 from database import SessionLocal
-from src.exceptions import AppException
+from src.services import admin_service
+from src.repositories.menu_repository_impl import MenuRepositoryImpl
+from src.exceptions.duplicate_menu_exception import DuplicateMenuException
+from src.schemas.menu import MenuCreate, MenuUpdate
 from src.db_models.menu import Menu
 from src.db_models.menu_item import MenuItem
 from src.db_models.user import User
@@ -30,12 +33,19 @@ class TestAdminServiceImpl:
         session.close()
 
     @pytest.fixture
-    def repository(self, session):
+    def menu_repository(self, session):
+        return MenuRepositoryImpl(session)
+
+    @pytest.fixture
+    def menu_item_repository(self, session):
         return MenuItemRepositoryImpl(session)
 
     @pytest.fixture
-    def service(self, repository):
-        return AdminServiceImpl(repository)
+    def service(self, menu_repository, menu_item_repository):
+        return AdminServiceImpl(
+            menu_repository,
+            menu_item_repository
+        )
 
     @pytest.fixture
     def admin(self):
@@ -71,6 +81,13 @@ class TestAdminServiceImpl:
         return menu
 
     @pytest.fixture
+    def menu_create(self, session):
+        return MenuCreate(
+            name="Dinner Menu",
+            description="Menu for dinner meals"
+        )
+
+    @pytest.fixture
     def menu_item(self, menu):
         return MenuItemCreate(
             name="Eba",
@@ -79,6 +96,53 @@ class TestAdminServiceImpl:
             description="two wraps of eba with fine egusi soup",
             menu_id=menu.id
         )
+
+    def test_admin_can_create_menu(self, service, admin, menu_create):
+        result = service.create_menu(admin, menu_create)
+
+        assert result.name == "Dinner Menu"
+        assert result.description == "Menu for dinner meals"
+
+    def test_customer_cannot_create_menu(self, service, customer, menu_create):
+        with pytest.raises(ForbiddenException):
+            service.create_menu(customer, menu_create)
+
+    def test_admin_cannot_create_duplicate_menu(self, service, admin, menu_create):
+        service.create_menu(admin, menu_create)
+        with pytest.raises(DuplicateMenuException):
+            service.create_menu(admin, menu_create)
+
+    def test_admin_can_update_menu(self, service, admin, menu_create):
+        saved = service.create_menu(admin, menu_create)
+        update = MenuUpdate(
+            name="Break fast Menu",
+            description="our wonderful breakfast alacha"
+        )
+        result = service.update_menu(admin, saved.id, update)
+
+        assert result.name == "Break fast Menu"
+        assert result.description == "our wonderful breakfast alacha"
+        assert result.id == saved.id
+
+    def test_customer_cannot_update_menu(self, service, customer, menu_create, admin):
+        saved = service.create_menu(admin, menu_create)
+        update = MenuUpdate(
+            name="Break fast Menu",
+            description="our wonderful breakfast alacha"
+        )
+        with pytest.raises(ForbiddenException):
+            service.update_menu(customer, saved.id, update)
+
+    def test_admin_can_remove_menu(self, service, admin, menu_create):
+        saved = service.create_menu(admin, menu_create)
+        service.remove_menu(admin, saved.id)
+
+        assert service.menu_repository.find_by_id(saved.id) is None
+
+    def test_customer_cannot_remove_menu(self, service, customer, menu_create, admin):
+        saved = service.create_menu(admin, menu_create)
+        with pytest.raises(ForbiddenException):
+            service.remove_item(customer, saved.id)
 
     def test_add_menu_item(self, service, admin, menu_item):
         result = service.add_menu_item(admin, menu_item)
@@ -99,11 +163,11 @@ class TestAdminServiceImpl:
         with pytest.raises(DuplicateMenuItemException):
             service.add_menu_item(admin, menu_item)
 
-    def test_to_remove_menu_item(self, service,repository,admin,menu_item):
+    def test_to_remove_menu_item(self, service, admin,menu_item):
         saved = service.add_menu_item(admin, menu_item)
         service.remove_item(admin, saved.id)
 
-        assert repository.find_by_id(saved.id) is None
+        assert service.menu_item_repository.find_by_id(saved.id) is None
 
     def test_customer_cannot_remove_menu_item(self, service, customer, admin, menu_item):
         saved = service.add_menu_item(admin, menu_item)

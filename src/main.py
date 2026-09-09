@@ -4,6 +4,7 @@ from fastapi import Request
 
 from src.exceptions import AppException
 from src.router.auth_router import router as auth_router
+from src.router.admin_router import router as admin_router
 from src.database import Base, engine
 
 Base.metadata.create_all(bind=engine)
@@ -19,3 +20,4 @@ async def app_exception_handler(request: Request, exception: AppException):
     )
 
 app.include_router(auth_router)
+app.include_router(admin_router)

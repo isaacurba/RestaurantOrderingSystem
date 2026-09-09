@@ -1,3 +1,5 @@
+from src.schemas.menu import MenuCreate, MenuUpdate
+from src.db_models.menu import Menu
 from src.schemas.user import UserCreate
 from src.db_models.user import User
 from src.db_models.menu_item import MenuItem
@@ -12,6 +14,7 @@ class Mapper:
             full_name=user_data.full_name,
             email=user_data.email,
             password=user_data.password,
+            address=user_data.address,
             is_active=user_data.is_active,
         )
         return user
@@ -43,3 +46,22 @@ class Mapper:
             existing_item.description = item.description
 
         return existing_item
+
+    @staticmethod
+    def map_to_menu(menu: MenuCreate) -> Menu:
+        menu = Menu(
+            name=menu.name,
+            description=menu.description
+        )
+        return menu
+
+    @staticmethod
+    def map_to_update_menu(existing_menu: Menu, menu: MenuUpdate) -> Menu:
+        if menu.name is not None:
+            existing_menu.name = menu.name
+
+        if menu.description is not None:
+            existing_menu.description = menu.description
+
+        return existing_menu
+
