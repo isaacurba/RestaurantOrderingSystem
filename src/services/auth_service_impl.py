@@ -31,4 +31,4 @@ class AuthServiceImpl(AuthService):
         saved_user = self.repository.save(existing_user)
 
         token = create_access_token(saved_user.id)
-        return TokenResponse(access_token=token, token_type="bearer")
+        return TokenResponse(access_token=token, token_type="bearer", user=UserResponse.model_validate(saved_user))
