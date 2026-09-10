@@ -25,5 +25,6 @@ class UserResponse(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str
+    user: UserResponse
 
     model_config = ConfigDict(from_attributes=True)
